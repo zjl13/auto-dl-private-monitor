@@ -1,0 +1,39 @@
+[Unit]
+Description=AutoDL private cloud GPU availability monitor
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=autodl-monitor
+Group=autodl-monitor
+WorkingDirectory=/opt/auto-dl-private-monitor
+ExecStart=/opt/auto-dl-private-monitor/.venv/bin/python -u /opt/auto-dl-private-monitor/monitor.py --config /etc/auto-dl-private-monitor/config.json
+Environment=PYTHONUTF8=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=always
+RestartSec=30
+KillSignal=SIGINT
+TimeoutStopSec=45
+UMask=0077
+StateDirectory=auto-dl-private-monitor
+StateDirectoryMode=0700
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+ReadWritePaths=/var/lib/auto-dl-private-monitor
+SyslogIdentifier=auto-dl-private-monitor
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

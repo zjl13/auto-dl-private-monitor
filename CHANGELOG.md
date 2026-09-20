@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 提供独立服务账号、受限目录权限和开机启动的 Linux systemd 部署配置。
 - 浏览器登录与读取支持通过 `browser.channel` 选择已安装的 Edge 或 Chrome。
 - 精简文档，集中提供运行说明、接口配置参考与通知配置。
 
