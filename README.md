@@ -309,6 +309,6 @@ $env:PYTHONUTF8='1'
 .venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-测试只连接本机模拟服务，覆盖共享计数、空闲变化、登录失效、分页、通知重试、凭据隔离与浏览器读取，不需要真实 Token。GitHub Actions 已配置 Linux/Windows 多 Python 版本和浏览器测试；配置工作流不代表这些云端矩阵已经实际运行过。
+测试只连接本机模拟服务或使用模拟响应，覆盖共享计数、空闲变化、登录失效、分页、通知重试、凭据隔离与浏览器读取，不需要真实 Token。GitHub Actions 的 Linux/Windows 多 Python 版本和浏览器测试已经通过，见 [验证记录](docs/TESTING.md)。
 
 发布时保留 LICENSE 和来源说明，确认提交中没有真实凭据或租户数据。

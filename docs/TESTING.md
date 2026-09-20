@@ -12,4 +12,6 @@
 
 另外已运行主配置的 `--sample examples/sample.private.json`：解析出两个 GPU 主机，排除 CPU 主机；合格的演示 RTX 4090 空闲数为 2。
 
-尚未执行真实私有云账号登录/资源查询、实际外部 webhook 投递，以及 GitHub Actions 的完整操作系统/Python 矩阵。交互式登录采集工具也尚未用实际 SSO 账号验证。测试通过不替代部署后的 `--dry-run` 核对。
+GitHub Actions 已验证通过：Ubuntu/Windows × Python 3.10、3.12、3.13 的 6 个核心任务，以及 Ubuntu 上的 Chromium 浏览器任务，共 7 个任务全部成功。[首次公开仓库验证记录](https://github.com/zjl13/auto-dl-private-monitor/actions/runs/35507184049)，对应代码提交 `546e0b664d564a2f780ca1792b0b7e38649a60ee`。核心任务跳过可选浏览器测试，浏览器任务运行全部 31 项测试。
+
+尚未执行真实私有云账号登录/资源查询和实际外部 webhook/微信投递。交互式登录采集工具也尚未用实际 SSO 账号验证。测试通过不替代部署后的 `--dry-run` 核对。
