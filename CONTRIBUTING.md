@@ -1,13 +1,24 @@
 # 贡献说明
 
-欢迎提交其他私有云版本的适配、分页支持和测试。
+欢迎提交接口适配、缺陷修复与测试。请用人工构造的响应复现问题，避免上传真实租户数据和凭据。
 
-1. 安装 `requirements.txt`；浏览器相关改动再安装 `requirements-browser.txt` 和 Chromium。
-2. 执行 `python -m unittest discover -s tests -v`。
-3. 浏览器改动额外执行 README 中的 `TEST_BROWSER=1` 测试。
-4. 用手工构造、无账号信息的 JSON 复现问题。共享/非共享、空表、失效会话、接口失败、部分分页应有对应验证。
-5. 不提交 `.secrets/`、`.state/`、真实网络捕获或截图中的租户信息。配置样例只保留环境变量占位符。
+## 验证
 
-接口的缺失字段不能静默当成 0；一个分页或逐卡查询失败时，应丢弃整轮快照。请保持只读监控范围。
+```bash
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
+```
 
-首次发布前，维护者可将 LICENSE 的贡献者署名替换为自己希望使用的署名。项目未包含两个参考仓库的代码或 AutoDL 前端代码，参考分析列于 `docs/RESEARCH.md`。第三方库遵循其各自许可证。
+浏览器相关改动另需安装 `requirements-browser.txt` 和 Playwright Chromium，并设置 `TEST_BROWSER=1` 后运行同一测试命令。PowerShell 使用 `$env:TEST_BROWSER='1'`。
+
+测试仅使用本机模拟服务和模拟响应，不需要 AutoDL 或通知服务凭据。CI 覆盖 Linux/Windows、Python 3.10/3.12/3.13 与 Chromium 集成。
+
+## 适配约定
+
+- 保持只读查询范围。
+- 缺失字段不能静默当作零空闲。
+- 分页或逐卡查询失败时丢弃整轮结果，保留上次完整快照。
+- 对共享/非共享、空表、失效会话、部分分页和通知失败提供相应验证。
+- 不记录认证头、含凭据的 URL 或完整异常响应。
+
+贡献遵循仓库 [MIT License](LICENSE)，第三方依赖遵循其各自许可证。

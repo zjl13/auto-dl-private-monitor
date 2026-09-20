@@ -36,7 +36,7 @@ def capture(config_file, save_sample=False):
         finished.set()
 
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=False)
+        browser = pw.chromium.launch(headless=False, channel=settings.get("channel") or None)
         try:
             context = browser.new_context(storage_state=str(state_file) if state_file.exists() else None)
             page = context.new_page()

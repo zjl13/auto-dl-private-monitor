@@ -190,7 +190,10 @@ class BrowserSource:
         self.close()
         from playwright.sync_api import sync_playwright
         self.pw = sync_playwright().start()
-        self.browser = self.pw.chromium.launch(headless=self.settings.get("headless", True))
+        self.browser = self.pw.chromium.launch(
+            headless=self.settings.get("headless", True),
+            channel=self.settings.get("channel") or None,
+        )
         self.context = self.browser.new_context(storage_state=str(state_file), service_workers="block")
         self.page = self.context.new_page()
         self.page.set_default_timeout(self.settings.get("timeout_seconds", 30) * 1000)

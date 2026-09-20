@@ -1,16 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- 浏览器登录与读取支持通过 `browser.channel` 选择已安装的 Edge 或 Chrome。
+- 精简文档，集中提供运行说明、接口配置参考与通知配置。
+
 ## 0.2.0 — 2026-09-20
 
-- 增加 Server酱 Turbo 原生微信通知，独立密钥文件/环境变量，校验业务成功状态。
-- 增加本机配置工具 setup_wechat.py、--notify-test 以及首次查询成功后的启动通知。
-- 多通道分别保存发送结果，微信失败延迟重试并持久化重试时间，保留现有 webhook 行为。
-- 增加微信配置教程及 10 项通知相关测试；本地共 31 项测试通过，真实手机送达仍需账号验证。
+- Server酱 Turbo 微信通知，支持独立密钥文件和环境变量。
+- 新增 `setup_wechat.py`、`--notify-test` 和首次查询成功后的启动通知。
+- 多通道独立记录投递结果；微信失败延迟重试并持久化重试时间。
 
 ## 0.1.0 — 2026-09-20
 
-- 首个公开准备版本：私有云 API、通用 JSON API、人工登录捕获和浏览器读取。
-- 多租 auto/disabled/enabled，exclusive/allocatable 两种物理卡计数。
-- 配置筛选、完整分页校验、会话失效处理、通知与状态持久化、单进程锁。
-- 提供测试、中文文档、来源分析和 MIT 许可证。
-- 实际私有云账号集成仍需维护者登录验证，详见 docs/RESEARCH.md。
+- AutoDL 私有云 API、通用 JSON API、人工登录捕获和浏览器读取。
+- 一卡多租 `auto/disabled/enabled`，物理卡 `exclusive/allocatable` 两种计数方式。
+- GPU 筛选、完整分页校验、会话失效处理、通知与状态持久化、单进程锁。
