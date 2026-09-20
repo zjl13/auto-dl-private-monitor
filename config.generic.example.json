@@ -1,0 +1,109 @@
+{
+  "source": "api",
+  "state_file": ".state/generic.json",
+  "poll": {
+    "interval_seconds": 60,
+    "max_backoff_seconds": 900,
+    "jitter_fraction": 0.1
+  },
+  "api": {
+    "url": "https://YOUR-PRIVATE-HOST.invalid/REPLACE-WITH-READONLY-LIST",
+    "request": {
+      "method": "POST",
+      "json": {}
+    },
+    "items_path": "data.items",
+    "success": {
+      "path": "code",
+      "values": [
+        0
+      ],
+      "auth_values": [
+        401,
+        403
+      ]
+    },
+    "pagination": {
+      "mode": "none"
+    },
+    "timeout_seconds": 20,
+    "ca_bundle": true,
+    "trust_env": false
+  },
+  "auth": {
+    "headers": {
+      "Authorization": "Bearer ${PRIVATE_GPU_TOKEN}"
+    },
+    "login": {
+      "enabled": false
+    }
+  },
+  "availability": {
+    "adapter": "none"
+  },
+  "mapping": {
+    "mode": "counts",
+    "fields": {
+      "id": "id",
+      "model": "gpu.model",
+      "free": "gpu.free",
+      "total": "gpu.total",
+      "status": "status",
+      "region": "region"
+    }
+  },
+  "filters": {
+    "models": [],
+    "model_match": "contains",
+    "regions": [],
+    "only_free": true,
+    "min_free_per_resource": 1,
+    "min_total_free_per_model": 1,
+    "allowed_statuses": []
+  },
+  "notifications": {
+    "notify_initial": true,
+    "webhook": {
+      "enabled": false,
+      "url": "${GPU_WEBHOOK_URL}",
+      "headers": {},
+      "timeout_seconds": 10,
+      "template": {
+        "id": "{{id}}",
+        "type": "{{type}}",
+        "time": "{{time}}",
+        "message": "{{message}}"
+      }
+    },
+    "notify_startup": false,
+    "serverchan": {
+      "enabled": false,
+      "sendkey_env": "SERVERCHAN_SENDKEY",
+      "sendkey_file": ".secrets/serverchan.json",
+      "channel": "",
+      "timeout_seconds": 10,
+      "min_interval_seconds": 60,
+      "retry_seconds": 900
+    }
+  },
+  "browser": {
+    "page_url": "https://YOUR-PRIVATE-HOST.invalid/console/machine",
+    "storage_state": ".secrets/browser-state.json",
+    "headless": true,
+    "timeout_seconds": 30,
+    "login_selector": "h1:has-text('使用AutoDL账号登录')",
+    "capture_headers": [
+      "Authorization",
+      "Cookie",
+      "X-CSRF-Token",
+      "X-XSRF-Token"
+    ],
+    "response_match": {
+      "origin": "https://YOUR-PRIVATE-HOST.invalid",
+      "path": "/REPLACE-WITH-READONLY-LIST",
+      "method": "POST"
+    },
+    "total_path": null,
+    "single_page_confirmed": false
+  }
+}

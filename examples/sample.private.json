@@ -1,0 +1,11 @@
+{
+  "code": "Success",
+  "data": {
+    "result_total": 3,
+    "list": [
+      {"machine_id": "demo-gpu-01", "machine_name": "演示主机1", "machine_type": "gpu", "gpu_name": "NVIDIA RTX 4090", "gpu": {"idle": 2, "total": 8}, "gpu_max_instance_num": 1},
+      {"machine_id": "demo-gpu-02", "machine_name": "演示主机2", "machine_type": "gpu", "gpu_name": "NVIDIA A100-SXM4-80GB", "gpu": {"idle": 0, "total": 8}, "gpu_max_instance_num": 1},
+      {"machine_id": "demo-cpu-01", "machine_type": "cpu", "gpu_name": "CPU", "gpu": {"idle": 4, "total": 16}, "gpu_max_instance_num": 1}
+    ]
+  }
+}

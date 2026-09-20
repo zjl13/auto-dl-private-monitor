@@ -1,0 +1,162 @@
+{
+  "source": "browser_dom",
+  "state_file": ".state/private-dom.json",
+  "poll": {
+    "interval_seconds": 60,
+    "max_backoff_seconds": 900,
+    "jitter_fraction": 0.1
+  },
+  "api": {
+    "url": "https://private.autodl.com/api/v2/machine/list",
+    "request": {
+      "method": "POST",
+      "json": {}
+    },
+    "items_path": "data.list",
+    "success": {
+      "path": "code",
+      "values": [
+        "Success"
+      ],
+      "auth_values": [
+        "AuthorizeFailed",
+        "UserNotExistInTenantError",
+        "AutodlSubUserError"
+      ]
+    },
+    "pagination": {
+      "mode": "page",
+      "location": "json",
+      "parameter": "page_index",
+      "start": 1,
+      "size_parameter": "page_size",
+      "page_size": 10,
+      "total_path": "data.result_total",
+      "max_pages": 100
+    },
+    "timeout_seconds": 20,
+    "ca_bundle": true,
+    "trust_env": false
+  },
+  "auth": {
+    "credentials_file": ".secrets/credentials.json",
+    "headers": {},
+    "login": {
+      "enabled": false
+    }
+  },
+  "availability": {
+    "adapter": "autodl_private",
+    "sharing": "disabled",
+    "free_definition": "exclusive",
+    "capacity_path": "gpu_max_instance_num",
+    "machine_type_path": "machine_type",
+    "stock": {
+      "request": {
+        "url": "https://private.autodl.com/api/v2/gpu_stock/list",
+        "method": "POST",
+        "json": {}
+      },
+      "location": "json",
+      "machine_parameter": "machine_id",
+      "items_path": "data.list",
+      "complete_list_confirmed": true,
+      "id_path": "gpu_uuid",
+      "reserved_path": "reserved",
+      "bindings_path": "gpu_bindings",
+      "legacy_instance_path": "instance_uuid"
+    }
+  },
+  "mapping": {
+    "mode": "counts",
+    "fields": {
+      "id": "id",
+      "model": "model",
+      "free": "free",
+      "total": "total"
+    }
+  },
+  "filters": {
+    "models": [],
+    "model_match": "contains",
+    "regions": [],
+    "only_free": true,
+    "min_free_per_resource": 1,
+    "min_total_free_per_model": 1,
+    "allowed_statuses": []
+  },
+  "notifications": {
+    "notify_initial": true,
+    "webhook": {
+      "enabled": false,
+      "url": "${GPU_WEBHOOK_URL}",
+      "headers": {},
+      "timeout_seconds": 10,
+      "template": {
+        "id": "{{id}}",
+        "type": "{{type}}",
+        "time": "{{time}}",
+        "message": "{{message}}"
+      }
+    },
+    "notify_startup": false,
+    "serverchan": {
+      "enabled": false,
+      "sendkey_env": "SERVERCHAN_SENDKEY",
+      "sendkey_file": ".secrets/serverchan.json",
+      "channel": "",
+      "timeout_seconds": 10,
+      "min_interval_seconds": 60,
+      "retry_seconds": 900
+    }
+  },
+  "browser": {
+    "page_url": "https://private.autodl.com/console/machine",
+    "storage_state": ".secrets/browser-state.json",
+    "headless": true,
+    "timeout_seconds": 30,
+    "login_selector": "h1:has-text('使用AutoDL账号登录')",
+    "capture_headers": [
+      "Authorization",
+      "Cookie",
+      "X-CSRF-Token",
+      "X-XSRF-Token"
+    ],
+    "response_match": {
+      "origin": "https://private.autodl.com",
+      "path": "/api/v2/machine/list",
+      "method": "POST"
+    },
+    "total_path": "data.result_total",
+    "single_page_confirmed": false,
+    "dom": {
+      "single_page_confirmed": true,
+      "ready_selector": ".el-table",
+      "loading_selector": ".el-loading-mask:visible",
+      "empty_selector": ".el-table__empty-text",
+      "row_selector": "table.el-table__body tbody tr",
+      "fields": {
+        "id": {
+          "selector": "td:nth-child(1)",
+          "regex": "\\n\\s*([A-Za-z0-9_-]+)\\s*$"
+        },
+        "model": {
+          "selector": "td:nth-child(3)"
+        },
+        "free": {
+          "selector": "td:nth-child(7)",
+          "regex": "(\\d+)\\s*/\\s*(\\d+)",
+          "group": 1
+        },
+        "total": {
+          "selector": "td:nth-child(7)",
+          "regex": "(\\d+)\\s*/\\s*(\\d+)",
+          "group": 2
+        },
+        "sharing": {
+          "selector": "td:nth-child(8)"
+        }
+      }
+    }
+  }
+}

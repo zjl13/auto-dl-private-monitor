@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.secrets/
+.state/
+config.json
+config.local*.json
+.env
+.env.*
+!.env.example
+*.har

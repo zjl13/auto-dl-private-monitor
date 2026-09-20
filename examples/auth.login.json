@@ -1,0 +1,47 @@
+{
+  "headers": {
+    "Authorization": "Bearer ${LOGIN_TOKEN}"
+  },
+  "login": {
+    "enabled": true,
+    "steps": [
+      {
+        "request": {
+          "url": "https://YOUR-PRIVATE-HOST.invalid/login",
+          "method": "POST",
+          "json": {
+            "username": "${GPU_USERNAME}",
+            "password": "${GPU_PASSWORD}"
+          }
+        },
+        "success": {
+          "path": "code",
+          "values": [
+            0
+          ]
+        },
+        "save": {
+          "LOGIN_TICKET": "data.ticket"
+        }
+      },
+      {
+        "request": {
+          "url": "https://YOUR-PRIVATE-HOST.invalid/session",
+          "method": "POST",
+          "json": {
+            "ticket": "${LOGIN_TICKET}"
+          }
+        },
+        "success": {
+          "path": "code",
+          "values": [
+            0
+          ]
+        },
+        "save": {
+          "LOGIN_TOKEN": "data.token"
+        }
+      }
+    ]
+  }
+}
