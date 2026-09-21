@@ -99,6 +99,8 @@ python monitor.py --config config.json
 
 环境变量 `SERVERCHAN_SENDKEY` 优先于密钥文件。服务接受消息不等于手机已送达；通道、额度和频率以 Server酱控制台为准。详细参数见 [通知配置](docs/WECHAT.md)。
 
+已有具备模板消息权限的自有公众号时，也可使用 [公众号直发通道](docs/WECHAT_OFFICIAL.md)。支持先用微信测试号验证，再配置正式账号的模板；测试号权限不代表正式号权限。
+
 ## 接口与配置
 
 | 示例文件 | 用途 |

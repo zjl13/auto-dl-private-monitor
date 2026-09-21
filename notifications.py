@@ -7,6 +7,7 @@ from pathlib import Path
 import requests
 
 from common import MonitorError, expand, read_json, validate_payload
+from wechat_official import WechatOfficial
 
 
 def render_template(value, ev):
@@ -15,8 +16,9 @@ def render_template(value, ev):
     if isinstance(value, list):
         return [render_template(v, ev) for v in value]
     if isinstance(value, str):
-        for k in ("id", "type", "time", "message"):
-            value = value.replace("{{" + k + "}}", str(ev[k]))
+        for k in ("id", "type", "time", "message", "title"):
+            replacement = (ev["message"].splitlines() or [""])[0][:32] if k == "title" else ev[k]
+            value = value.replace("{{" + k + "}}", str(replacement))
     return value
 
 
@@ -29,15 +31,18 @@ def validate_sendkey(value):
 class Notifier:
     def __init__(self, config, base=".", logger=print):
         n = config.get("notifications", {})
-        self.channels = {name: n[name] for name in ("webhook", "serverchan")
+        self.channels = {name: n[name] for name in ("webhook", "serverchan", "wechat_official")
                          if n.get(name, {}).get("enabled", False)}
         self.base, self.log = Path(base), logger
         self.not_before = {}
         self.session = requests.Session()
         self.session.trust_env = False
+        self.wechat = WechatOfficial(base) if "wechat_official" in self.channels else None
 
     def close(self):
         self.session.close()
+        if self.wechat:
+            self.wechat.close()
 
     def sendkey(self, settings):
         value = os.environ.get(settings.get("sendkey_env", "SERVERCHAN_SENDKEY"), "").strip()
@@ -54,6 +59,8 @@ class Notifier:
             settings = expand(raw)
             if name == "serverchan":
                 self.sendkey(settings)
+            elif name == "wechat_official":
+                self.wechat.validate(settings)
             elif not settings.get("url"):
                 raise MonitorError("webhook", "缺少 webhook URL。")
             for field, default in (("min_interval_seconds", 60), ("retry_seconds", 900), ("timeout_seconds", 10)):
@@ -63,6 +70,9 @@ class Notifier:
 
     def send(self, name, raw, ev):
         settings = expand(raw)
+        if name == "wechat_official":
+            self.wechat.send(settings, render_template(settings["data"], ev))
+            return
         self.session.cookies.clear()
         self.session.trust_env = settings.get("trust_env", False)
         kwargs = {"timeout": settings.get("timeout_seconds", 10), "allow_redirects": False}
@@ -104,17 +114,19 @@ class Notifier:
                     continue
                 try:
                     self.send(name, settings, ev)
-                except (requests.RequestException, MonitorError, ValueError, TypeError):
+                except (requests.RequestException, MonitorError, ValueError, TypeError, OSError) as error:
                     # No raw exception: requests errors can contain the secret URL.
                     self.log(f"{name} 提醒发送失败；事件已保留，请检查通道、凭据或额度。")
-                    if name == "serverchan":
+                    if name == "wechat_official" and isinstance(error, MonitorError):
+                        self.log(str(error))  # Native client errors contain only sanitized details.
+                    if name in ("serverchan", "wechat_official"):
                         ev.setdefault("_retry_at", {})[name] = now + settings.get("retry_seconds", 900)
                     blocked.add(name)
                     continue
                 delivered.append(name)
                 ev.get("_retry_at", {}).pop(name, None)
                 self.log(f"{name} 已接受通知。")
-                if name == "serverchan":
+                if name in ("serverchan", "wechat_official"):
                     self.not_before[name] = now + settings.get("min_interval_seconds", 60)
             if all(name in delivered for name in self.channels):
                 pending.remove(ev)

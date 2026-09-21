@@ -32,6 +32,10 @@ python monitor.py --config config.json --notify-test
 
 服务请求使用 HTTPS POST 表单 `title/desp`，成功要求 HTTP 2xx 且 JSON `code` 为整数 `0`。日志表示服务已接受，手机送达还取决于通道绑定和额度。[官方接入说明](https://sct.ftqq.com/docs/integrations/java/)
 
+## 自有微信公众号
+
+支持使用自己的公众号直接调用微信模板消息接口。需要验证账号权限、模板和接收者绑定，见 [公众号直发配置](WECHAT_OFFICIAL.md)。此通道与 Server酱可独立启停，分别记录投递结果。
+
 ## 通用 webhook
 
 启用 `notifications.webhook.enabled`，通过环境变量 `GPU_WEBHOOK_URL` 提供地址。默认发送 JSON：
