@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 支持 `notifications.change_mode: increases_only`，空闲卡减少时更新基线但不发送资源提醒。
 - 新增自有微信公众号模板消息通道，支持共享令牌缓存、到期刷新、独立投递状态与失败重试。
 - 提供独立服务账号、受限目录权限和开机启动的 Linux systemd 部署配置。
 - 浏览器登录与读取支持通过 `browser.channel` 选择已安装的 Edge 或 Chrome。

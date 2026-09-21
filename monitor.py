@@ -37,7 +37,7 @@ def snapshot_text(snapshot):
     return "\n".join(lines)
 
 
-def update_success(state, snapshot, notify_initial=True):
+def update_success(state, snapshot, notify_initial=True, change_mode="all"):
     events = []
     if state.get("error"):
         events.append(event("recovered", "GPU 监控恢复，已重新取得完整资源快照。"))
@@ -45,6 +45,14 @@ def update_success(state, snapshot, notify_initial=True):
     if previous is None:
         if notify_initial and snapshot["available"]:
             events.append(event("initial_available", "首次检测到可用 GPU\n" + snapshot_text(snapshot)))
+    elif change_mode == "increases_only":
+        increases = {model: (previous["free_by_model"].get(model, 0), count)
+                     for model, count in snapshot["free_by_model"].items()
+                     if count > previous["free_by_model"].get(model, 0)}
+        if increases and snapshot["available"]:
+            details = "\n".join(f"{model}: 空闲 {before} → {after}"
+                                for model, (before, after) in sorted(increases.items()))
+            events.append(event("gpu_increase", "GPU 空闲数量增加\n" + details + "\n" + snapshot_text(snapshot)))
     elif previous != snapshot:
         before, after = previous["resources"], snapshot["resources"]
         added, removed = sorted(after.keys() - before.keys()), sorted(before.keys() - after.keys())
@@ -76,6 +84,8 @@ def enqueue(state, events):
 
 
 def validate_config(config):
+    if config.get("notifications", {}).get("change_mode", "all") not in ("all", "increases_only"):
+        raise MonitorError("config", "notifications.change_mode 只支持 all/increases_only。")
     if config.get("source") not in ("api", "browser_network", "browser_dom"):
         raise MonitorError("config", "source 只支持 api/browser_network/browser_dom。")
     poll = config["poll"]
@@ -144,7 +154,8 @@ def _run(config_path, once=False, sample=None, dry_run=False):
                     print(json.dumps(snapshot, ensure_ascii=False, indent=2))
                     return 0
                 events = update_success(state, snapshot,
-                                        config.get("notifications", {}).get("notify_initial", True) and not startup_due)
+                                        config.get("notifications", {}).get("notify_initial", True) and not startup_due,
+                                        config.get("notifications", {}).get("change_mode", "all"))
                 if startup_due:
                     events.append(event("monitor_started", "GPU 监控已启动，首次资源查询成功\n" + snapshot_text(snapshot)))
                     startup_due = False
